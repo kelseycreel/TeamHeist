@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Bangazon
+namespace TeamHeist
 {
     class TeamMember
     {
