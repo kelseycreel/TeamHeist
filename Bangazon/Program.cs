@@ -9,68 +9,115 @@ namespace TeamHeist
         static void Main(string[] args)
         {
             List<TeamMember> myTeam = new List<TeamMember>();
-            var bankDifficultyLevel = 100;
 
-            Console.WriteLine("Plan Your Heist!");
+            Console.WriteLine("Plan Your Heist! What is the difficulty level of the bank you want to rob?");
+            var bankDifficultyLevelInput = Console.ReadLine();
+            var difficultyLevel = Int32.TryParse(bankDifficultyLevelInput, out int bankDifficultyLevel);
+
+            while (bankDifficultyLevel <= 0)
+            {
+                Console.WriteLine("Sorry! Difficulty Level has to be a positive number!");
+                bankDifficultyLevelInput = Console.ReadLine();
+                difficultyLevel = Int32.TryParse(bankDifficultyLevelInput, out bankDifficultyLevel);
+            }
+
             Console.WriteLine("How many members are on your team?");
-            var teamCapacity = Console.ReadLine();
+            var teamCapacityInput = Console.ReadLine();
+            var teamCapacity = Int32.TryParse(teamCapacityInput, out int capacity);
+
+            while (capacity <= 0)
+            {
+                Console.WriteLine("Sorry! Team members has to be a positive number!");
+                teamCapacityInput = Console.ReadLine();
+                teamCapacity = Int32.TryParse(teamCapacityInput, out capacity);
+            }
 
             int i = 0;
             do
             {
                 i++;
                 Console.WriteLine("Please enter the name of your team member.");
-                var tMName = Console.ReadLine();
+                var teamMemberName = Console.ReadLine();
 
-                Console.WriteLine($"Please enter the skill level of {tMName} (Has to be a positive number).");
-                var tMSkill = Console.ReadLine();
-                var tMSkillLevel = Int32.Parse(tMSkill);
-                while (tMSkillLevel < 0)
+                Console.WriteLine($"Please enter the skill level of {teamMemberName} (Has to be a positive number).");
+                var teamMemberSkill = Console.ReadLine();
+                int teamMemberSkillLevel;
+                bool num = int.TryParse(teamMemberSkill, out teamMemberSkillLevel);
+                while (!num || teamMemberSkillLevel < 0)
                 {
                     Console.WriteLine($"Invalid skill level. Please enter a positive number.");
-                    tMSkill = Console.ReadLine();
-                    tMSkillLevel = Int32.Parse(tMSkill);
+                    teamMemberSkill = Console.ReadLine();
+                    num = int.TryParse(teamMemberSkill, out teamMemberSkillLevel);
                 }
 
-                Console.WriteLine($"Please enter the courage factor of {tMName} (any number between 0.0 and 2.0).");
-                var tMCourage = Console.ReadLine();
-                var tMCourageFactor = Convert.ToDecimal(tMCourage);
-                while (tMCourageFactor < 0.0m || tMCourageFactor > 2.0m)
+                Console.WriteLine($"Please enter the courage factor of {teamMemberName} (any number between 0.0 and 2.0).");
+                var teamMemberCourage = Console.ReadLine();
+                var courageFactor = Decimal.TryParse(teamMemberCourage, out decimal teamMemberCourageFactor);
+                while (teamMemberCourageFactor <= 0.0m || teamMemberCourageFactor > 2.0m)
                 {
                     Console.WriteLine($"Invalid courage factor. Please enter any number between 0.0 and 2.0.");
-                    tMCourage = Console.ReadLine();
-                    tMCourageFactor = Convert.ToDecimal(tMCourage);
+                    teamMemberCourage = Console.ReadLine();
+                    courageFactor = Decimal.TryParse(teamMemberCourage, out teamMemberCourageFactor);
                 }
 
-                myTeam.Add(new TeamMember(tMName, tMSkillLevel, tMCourageFactor));
+                myTeam.Add(new TeamMember(teamMemberName, teamMemberSkillLevel, teamMemberCourageFactor));
 
-                Console.WriteLine($"{tMName} has a skill level of {tMSkillLevel} and a courage factor of {tMCourageFactor}, and has been added to your team!");
+                Console.WriteLine($"{teamMemberName} has a skill level of {teamMemberSkillLevel} and a courage factor of {teamMemberCourageFactor}, and has been added to your team!");
                 Console.ReadLine();
             }
-            while (i < Int32.Parse(teamCapacity));
+            while (i < capacity);
 
-            Console.WriteLine($"You have {teamCapacity} team members! ");
+            Console.WriteLine($"You have {capacity} team members! ");
 
             foreach (var member in myTeam)
             {
-                Console.WriteLine($"{member.Name}: Skill - {member.SkillLevel},  Courage -{member.CourageFactor}");
+                Console.WriteLine($"{member.Name}: Skill: {member.SkillLevel},  Courage: {member.CourageFactor}");
+            }
+            Console.WriteLine("How many times would you like to attempt to rob the bank?");
+            var attempts = Console.ReadLine();
+            var attemptsParse = Int32.TryParse(attempts, out int attemptsInt);
+
+            while (attemptsInt <= 0)
+            {
+                Console.WriteLine("Sorry! Attempts has to be a positive number!");
+                attempts = Console.ReadLine();
+                attemptsParse = Int32.TryParse(attempts, out attemptsInt);
             }
 
             Console.Clear();
 
             var sumSkillLevel = myTeam.Select(level => level.SkillLevel).Sum();
+            Console.WriteLine($"Your combined skill level is:{sumSkillLevel}");
 
-            if (sumSkillLevel >= bankDifficultyLevel)
+            int j = 0;
+            var success = 0;
+            var fails = 0;
+
+            do
             {
-                Console.WriteLine("Success! Your team had enough skill to rob the bank!");
-            }
-            else
-            {
-                Console.WriteLine("Fail! Your team did not have enough skill to rob the bank!");
-            }
+                var random = new Random();
+                var luckValue = random.Next(-10, 10);
 
+                bankDifficultyLevel += luckValue;
 
-            Console.ReadLine();
+                Console.WriteLine($"Your teams combined skill level is {sumSkillLevel}. The bank dificulty level is {bankDifficultyLevel}.");
+
+                if (sumSkillLevel >= bankDifficultyLevel)
+                {
+                    Console.WriteLine("You succeeded!");
+                    success += 1;
+                }
+                else
+                {
+                    Console.WriteLine("You failed!");
+                    fails += 1;
+                }
+                j++;
+            }
+            while (j < attemptsInt);
+
+            Console.WriteLine($"Your team had a total of {success} successful bank robberies and a total of {fails} failed bank robberies.");
+            Console.ReadKey();
         }
     }
 }
